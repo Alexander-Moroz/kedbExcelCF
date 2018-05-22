@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+  <plugin-info>
+    <description>${project.description}</description>
+    <version>${project.version}</version>
+    <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+    <param name="plugin-icon">images/pluginIcon.png</param>
+    <param name="plugin-logo">images/pluginLogo.png</param>
+  </plugin-info>
+  <!-- add our i18n resource -->
+  <resource type="i18n" name="i18n" location="kedbCF"/>
+  <!-- add our web resources -->
+  <web-resource key="kedbCF-resources" name="kedbCF Web Resources">
+    <dependency>com.atlassian.auiplugin:ajs</dependency>
+    <resource type="download" name="kedbCF.css" location="/css/kedbCF.css"/>
+    <resource type="download" name="kedbCF.js" location="/js/kedbCF.js"/>
+    <resource type="download" name="images/" location="/images"/>
+    <context>kedbCF</context>
+  </web-resource>
+  <customfield-type name="My Calculated KEDB Field" i18n-name-key="my-calculated-kedb-field.name" key="my-calculated-kedb-field" class="ru.amoroz.jira.customfields.MyCalculatedKEDBField">
+    <description key="my-calculated-kedb-field.description">The My Calculated KEDB Field Plugin</description>
+    <resource name="view" type="velocity" location="/templates/customfields/my-calculated-kedb-field/view.vm"/>
+    <resource name="edit" type="velocity" location="/templates/customfields/my-calculated-kedb-field/edit.vm"/>
+  </customfield-type>
+</atlassian-plugin>
