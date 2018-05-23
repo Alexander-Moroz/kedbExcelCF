@@ -21,6 +21,6 @@
   <customfield-type name="My Calculated KEDB Field" i18n-name-key="my-calculated-kedb-field.name" key="my-calculated-kedb-field" class="ru.amoroz.jira.customfields.MyCalculatedKEDBField">
     <description key="my-calculated-kedb-field.description">The My Calculated KEDB Field Plugin</description>
     <resource name="view" type="velocity" location="/templates/customfields/my-calculated-kedb-field/view.vm"/>
-    <resource name="edit" type="velocity" location="/templates/customfields/my-calculated-kedb-field/edit.vm"/>
+    <!--<resource name="edit" type="velocity" location="/templates/customfields/my-calculated-kedb-field/edit.vm"/>-->
   </customfield-type>
 </atlassian-plugin>
