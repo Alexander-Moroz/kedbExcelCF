@@ -27,16 +27,24 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
 
     @Override
     public Object getValueFromIssue(CustomField customField, Issue issue) {
-        String filename = "C:/kedbexcel.xlsx";
-        List<KedbItem> kedbItemList = getKedbItemListFromXlsx(filename);
+        String filename = "C:/kedbexcelold.xls";
+
+        List<KedbItem> kedbItemList = null;
+
+        if (filename.toUpperCase().endsWith(".XLSX")) {
+            kedbItemList = getKedbItemListFromXlsx(filename);
+        } else if (filename.toUpperCase().endsWith(".XLS")) {
+            kedbItemList = getKedbItemListFromXls(filename);
+        }
+
         if (kedbItemList == null || kedbItemList.isEmpty()) {
-            return "Исходный файл KEDB не сконфигурирован";
+            return "Файл с KEDB отсутствует или не сконфигурирован";
         } else {
             return kedbItemList.stream()
                     .filter(e -> e.getKey().trim().toUpperCase().equals(issue.getSummary().trim().toUpperCase()))
                     .findFirst()
                     .map(e -> e.getProblem())
-                    .orElse("Dont match");
+                    .orElse("Нет соответствий");
         }
     }
 
@@ -50,6 +58,7 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
         return s;
     }
 
+    //REFACTOR TO USE INTERFACES
     public List<KedbItem> getKedbItemListFromXlsx(String xlsxFileNameAddress) {
         try {
             XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(new File(xlsxFileNameAddress)));
@@ -75,9 +84,6 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
                             row.getCell(4).getStringCellValue())
                     );
                 } else {
-                    for (KedbItem k : kedbItemList) {
-                        //System.out.println(k.getKey() + " | " + k.getParam1() + " | " + k.getParam2() + " | " + k.getProblem() + " | " + k.getLink());
-                    }
                     return kedbItemList;
                 }
             }
@@ -89,6 +95,7 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
         return null;
     }
 
+    //REFACTOR TO USE INTERFACES
     public List<KedbItem> getKedbItemListFromXls(String xlsFileNameAddress) {
         try {
             HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(new File(xlsFileNameAddress)));
@@ -114,9 +121,6 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
                             row.getCell(4).getStringCellValue())
                     );
                 } else {
-                    for (KedbItem k : kedbItemList) {
-                        //System.out.println(k.getKey() + " | " + k.getParam1() + " | " + k.getParam2() + " | " + k.getProblem() + " | " + k.getLink());
-                    }
                     return kedbItemList;
                 }
             }
