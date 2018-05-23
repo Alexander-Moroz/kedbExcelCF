@@ -4,13 +4,11 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.customfields.impl.CalculatedCFType;
 import com.atlassian.jira.issue.customfields.impl.FieldValidationException;
 import com.atlassian.jira.issue.fields.CustomField;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +27,11 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
     public Object getValueFromIssue(CustomField customField, Issue issue) {
         String filename = "C:/kedbexcelold.xls";
 
-        List<KedbItem> kedbItemList = null;
-
-        if (filename.toUpperCase().endsWith(".XLSX")) {
-            kedbItemList = getKedbItemListFromXlsx(filename);
-        } else if (filename.toUpperCase().endsWith(".XLS")) {
-            kedbItemList = getKedbItemListFromXls(filename);
+        if (!(filename.toUpperCase().endsWith(".XLSX") || filename.toUpperCase().endsWith(".XLS"))) {
+            return "Некорректный файл. Д.б. *.xls или *.xlsx";
         }
+
+        List<KedbItem> kedbItemList = getKedbItemListFromExcel(filename);
 
         if (kedbItemList == null || kedbItemList.isEmpty()) {
             return "Файл с KEDB отсутствует или не сконфигурирован";
@@ -58,16 +54,24 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
         return s;
     }
 
-    //REFACTOR TO USE INTERFACES
-    public List<KedbItem> getKedbItemListFromXlsx(String xlsxFileNameAddress) {
+    public List<KedbItem> getKedbItemListFromExcel(String excelFileNameAddress) {
         try {
-            XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(new File(xlsxFileNameAddress)));
-            XSSFSheet sheet = workbook.getSheetAt(0);
+            Workbook workbook = null;
+
+            if (excelFileNameAddress.toUpperCase().endsWith(".XLSX")) {
+                workbook = new XSSFWorkbook(new FileInputStream(new File(excelFileNameAddress)));
+            } else if (excelFileNameAddress.toUpperCase().endsWith(".XLS")) {
+                workbook = new HSSFWorkbook(new FileInputStream(new File(excelFileNameAddress)));
+            } else {
+                return null;
+            }
+
+            Sheet sheet = workbook.getSheetAt(0);
 
             List<KedbItem> kedbItemList = new ArrayList<>();
             int rownum = 0;
-            XSSFCell cell;
-            XSSFRow row;
+            Cell cell;
+            Row row;
 
             row = sheet.getRow(rownum);
 
@@ -88,42 +92,6 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
                 }
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    //REFACTOR TO USE INTERFACES
-    public List<KedbItem> getKedbItemListFromXls(String xlsFileNameAddress) {
-        try {
-            HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream(new File(xlsFileNameAddress)));
-            HSSFSheet sheet = workbook.getSheetAt(0);
-
-            List<KedbItem> kedbItemList = new ArrayList<>();
-            int rownum = 0;
-            HSSFCell cell;//Cell cell;
-            HSSFRow row;//Row row;
-
-            row = sheet.getRow(rownum);
-
-            while (true) {
-                rownum++;
-                row = sheet.getRow(rownum);
-
-                if (row != null && row.getCell(0).getStringCellValue() != null && !row.getCell(0).getStringCellValue().isEmpty()) {
-                    kedbItemList.add(new KedbItem(
-                            row.getCell(0).getStringCellValue(),
-                            row.getCell(1).getStringCellValue(),
-                            row.getCell(2).getStringCellValue(),
-                            row.getCell(3).getStringCellValue(),
-                            row.getCell(4).getStringCellValue())
-                    );
-                } else {
-                    return kedbItemList;
-                }
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
