@@ -23,4 +23,8 @@
     <resource name="view" type="velocity" location="/templates/customfields/my-calculated-kedb-field/view.vm"/>
     <!--<resource name="edit" type="velocity" location="/templates/customfields/my-calculated-kedb-field/edit.vm"/>-->
   </customfield-type>
+
+  <component-import key="ApplicationService">
+    <interface>com.atlassian.applinks.api.ApplicationLinkService</interface>
+  </component-import>
 </atlassian-plugin>
