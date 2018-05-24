@@ -37,13 +37,12 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
         String confluenceFileNameAddress = "http://desktop-hblg0v5:1990/confluence/download/attachments/1605633/kedbexcel.xlsx";
         List<KedbItem> kedbItemList = getKedbItemListFromConfluenceAppLinkFile(confluenceFileNameAddress);
 
-        String filename = "C:/kedbexcelold.xls";
-
-        if (!(filename.toUpperCase().endsWith(".XLSX") || filename.toUpperCase().endsWith(".XLS"))) {
-            return "Некорректный файл. Д.б. *.xls или *.xlsx";
-        }
-
-        //List<KedbItem> kedbItemList = getKedbItemListFromExcel(filename);
+        //for file only
+//        String filename = "C:/kedbexcelold.xls";
+//        if (!(filename.toUpperCase().endsWith(".XLSX") || filename.toUpperCase().endsWith(".XLS"))) {
+//            return "Некорректный файл. Д.б. *.xls или *.xlsx";
+//        }
+//        List<KedbItem> kedbItemList = getKedbItemListFromExcelFile(filename);
 
         if (kedbItemList == null || kedbItemList.isEmpty()) {
             return "Файл с KEDB отсутствует или не сконфигурирован";
