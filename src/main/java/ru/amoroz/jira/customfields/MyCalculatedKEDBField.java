@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MyCalculatedKEDBField extends CalculatedCFType {
@@ -33,7 +34,7 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
 
     @Override
     public Object getValueFromIssue(CustomField customField, Issue issue) {
-        String confluenceFileNameAddress = "http://spb-ws-119:1990/confluence/download/attachments/786433/kedbexcelold.xls";
+        String confluenceFileNameAddress = "http://desktop-hblg0v5:1990/confluence/download/attachments/1605633/kedbexcel.xlsx";
         List<KedbItem> kedbItemList = getKedbItemListFromConfluenceAppLinkFile(confluenceFileNameAddress);
 
         String filename = "C:/kedbexcelold.xls";
@@ -65,56 +66,63 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
         return s;
     }
 
-    private List<KedbItem> getKedbItemListFromExcel(String excelFileNameAddress) {
-        try {
-            Workbook workbook = null;
-
-            if (excelFileNameAddress.toUpperCase().endsWith(".XLSX")) {
-                workbook = new XSSFWorkbook(new FileInputStream(new File(excelFileNameAddress)));
-            } else if (excelFileNameAddress.toUpperCase().endsWith(".XLS")) {
-                workbook = new HSSFWorkbook(new FileInputStream(new File(excelFileNameAddress)));
-            } else {
-                return null;
-            }
-
-            Sheet sheet = workbook.getSheetAt(0);
-
-            List<KedbItem> kedbItemList = new ArrayList<>();
-            int rownum = 0;
-            Cell cell;
-            Row row;
-
-            row = sheet.getRow(rownum);
-
-            while (true) {
-                rownum++;
-                row = sheet.getRow(rownum);
-
-                if (row != null && row.getCell(0).getStringCellValue() != null && !row.getCell(0).getStringCellValue().isEmpty()) {
-                    kedbItemList.add(new KedbItem(
-                            row.getCell(0).getStringCellValue(),
-                            row.getCell(1).getStringCellValue(),
-                            row.getCell(2).getStringCellValue(),
-                            row.getCell(3).getStringCellValue(),
-                            row.getCell(4).getStringCellValue())
-                    );
-                } else {
-                    return kedbItemList;
-                }
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
+//    private List<KedbItem> getKedbItemListFromExcelFile(String excelFileNameAddress) {
+//        try {
+//            Workbook workbook = null;
+//
+//            if (excelFileNameAddress.toUpperCase().endsWith(".XLSX")) {
+//                workbook = new XSSFWorkbook(new FileInputStream(new File(excelFileNameAddress)));
+//            } else if (excelFileNameAddress.toUpperCase().endsWith(".XLS")) {
+//                workbook = new HSSFWorkbook(new FileInputStream(new File(excelFileNameAddress)));
+//            } else {
+//                return null;
+//            }
+//
+//            Sheet sheet = workbook.getSheetAt(0);
+//
+//            List<KedbItem> kedbItemList = new ArrayList<>();
+//            int rownum = 0;
+//            Cell cell;
+//            Row row;
+//
+//            row = sheet.getRow(rownum);
+//
+//            while (true) {
+//                rownum++;
+//                row = sheet.getRow(rownum);
+//
+//                if (row != null && row.getCell(0).getStringCellValue() != null && !row.getCell(0).getStringCellValue().isEmpty()) {
+//                    kedbItemList.add(new KedbItem(
+//                            row.getCell(0).getStringCellValue(),
+//                            row.getCell(1).getStringCellValue(),
+//                            row.getCell(2).getStringCellValue(),
+//                            row.getCell(3).getStringCellValue(),
+//                            row.getCell(4).getStringCellValue())
+//                    );
+//                } else {
+//                    return kedbItemList;
+//                }
+//            }
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
+//    }
 
     private List<KedbItem> getKedbItemListFromConfluenceAppLinkFile(String confluenceExcelFileNameAddress) {
         try {
             ApplicationLinkService appLinkService = ComponentAccessor.getComponent(ApplicationLinkService.class);
-            //ApplicationLink appLink = appLinkService.getPrimaryApplicationLink(ConfluenceApplicationType.class);
-            ApplicationLink appLink = appLinkService.getApplicationLink(new ApplicationId("23f4e42d-1644-37e1-93ee-736e584dfc0f"));
+            Iterator<ApplicationLink> applicationLinkIterator = appLinkService.getApplicationLinks().iterator();
+            ApplicationLink appLink = null;
+            ApplicationLink iter = null;
+            while (applicationLinkIterator.hasNext()) {
+                iter = applicationLinkIterator.next();
+                if (iter.getRpcUrl().toString().equals("http://desktop-hblg0v5:1990/confluence")) {
+                    appLink = iter;
+                }
+            }
             ApplicationLinkRequestFactory applicationLinkRequestFactory = appLink.createAuthenticatedRequestFactory();
             ApplicationLinkRequest request = applicationLinkRequestFactory.createRequest(Request.MethodType.GET, confluenceExcelFileNameAddress);
 
@@ -167,7 +175,7 @@ public class MyCalculatedKEDBField extends CalculatedCFType {
                 }
             }
 
-        } catch (IOException | CredentialsRequiredException | ResponseException | TypeNotInstalledException e) {
+        } catch (IOException | CredentialsRequiredException | ResponseException e) {
             e.printStackTrace();
         }
 
